@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "CheckSoliq",
     "PaymentSoliq",
     'Corsheaders'
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
