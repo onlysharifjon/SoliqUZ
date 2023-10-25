@@ -11,7 +11,5 @@ class UserModel(models.Model):
     PS_serial_num = models.IntegerField(max_length=7,unique=True)
     PS_seria = models.CharField(max_length=2)
     phone = models.IntegerField(max_length=9,unique=True)
-
-
     def __str__(self):
         return self.name
