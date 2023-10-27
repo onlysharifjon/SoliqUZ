@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import *
 
-# Register your models here.
+admin.site.site_header = "Soliquz Admin"
+admin.site.register(UserModel)
+

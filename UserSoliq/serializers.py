@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import UserModel
 
 
-class ForLoginSerializer(serializers.Serializer):
+class ForLoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserModel
-        fields = ['PS_serial_num','PS_seria','password']
+        fields = '__all__'
