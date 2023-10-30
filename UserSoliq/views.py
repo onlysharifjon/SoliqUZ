@@ -1,11 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from django.contrib.auth import authenticate
 from .serializers import ForLoginSerializer
 from .models import UserModel
 from drf_yasg.utils import swagger_auto_schema
+import jwt
+
 
 class LoginUserSoliq(APIView):
     serializer_class = ForLoginSerializer
@@ -15,22 +17,28 @@ class LoginUserSoliq(APIView):
         seriya = request.data.get('PS_seria')
         seriya_num = request.data.get('PS_serial_num')
         password = request.data.get('password')
+        # return jwt token
+        # user = authenticate(UserModel.objects.filter(PS_seria=seriya, PS_serial_num=seriya_num, password=password).first())
+        user = UserModel.objects.filter(PS_seria=seriya, PS_serial_num=seriya_num, password=password).first()
+        return Response({"Login Success": user.id})
 
-        print(f"Credentials: seriya={seriya}, seriya_num={seriya_num}, password={password}")
 
-        if seriya and seriya_num and password:
-            # Authenticate the user
-            user = authenticate(request, PS_seria=seriya, PS_serial_num=seriya_num, password=password)
-            print(f"User: {user}")
+class Register(APIView):
+    serializer_class = ForLoginSerializer
 
-            if user is not None:
-                # If authentication is successful, generate an access token
-                refresh = RefreshToken.for_user(user)
+    @swagger_auto_schema(request_body=ForLoginSerializer)
+    def post(self, request):
+        serializer = ForLoginSerializer(data=request.data)
+        seriya = request.data.get('PS_seria')
+        seriya_num = request.data.get('PS_serial_num')
+        print(type(seriya_num))
+        password = request.data.get('password')
+        phone = request.data.get('phone')
+        name = request.data.get('name')
+        surename = request.data.get('surename')
+        user = UserModel.objects.filter(PS_seria=seriya, PS_serial_num=seriya_num, password=password).first()
+        acsess_token = AccessToken.for_user(user)
+        if serializer.is_valid():
 
-                return Response({
-                    "user": self.serializer_class(user).data,
-                    'Acsess_Token': str(refresh.access_token),
-                })
-
-        # If authentication fails or missing credentials, return an error response
-        return Response("Invalid credentials", status=status.HTTP_401_UNAUTHORIZED)
+            serializer.save()
+            return Response({"Register Success": acsess_token})
