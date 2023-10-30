@@ -50,3 +50,4 @@ class Register(APIView):
                 return Response({"error": "User not found with provided credentials"}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
