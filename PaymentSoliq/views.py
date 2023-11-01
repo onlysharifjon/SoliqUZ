@@ -27,7 +27,12 @@ class PaymentVIEW(APIView):
             fiksal_belgi+=str(random.randint(1,9))
         fiksal_belgi = int(fiksal_belgi)
         #salom
-
+        #
+        fiksal_seriya = ""
+        for i in range(12):
+            fiksal_seriya += str(random.randint(1, 9))
+        fiksal_seriya = int(fiksal_seriya)
+        # salom
 
         check_create = Check.objects.create(user=user, where=where, total=total, time=time)
 
