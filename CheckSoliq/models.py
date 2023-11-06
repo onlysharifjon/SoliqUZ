@@ -5,7 +5,8 @@ from UserSoliq.models import UserModel
 
 
 class Check(models.Model):
-    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    # user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    usr = models.CharField(max_length=200)
     where = models.CharField(max_length=255)
     total = models.IntegerField()
     time = models.DateTimeField(auto_now_add=True)

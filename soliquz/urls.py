@@ -37,7 +37,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('pay/', include("PaymentSoliq.urls")),
+    path('pay/', include("PaymentSoliq.urls")),
     # path('check/', include("CheckSoliq.urls")),
     path('user/', include("UserSoliq.urls")),
 
