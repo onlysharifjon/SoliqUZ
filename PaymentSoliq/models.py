@@ -5,7 +5,7 @@ from UserSoliq.models import UserModel
 
 class Payment(models.Model):
     pay_user = models.ForeignKey(
-        UserModel, on_delete=models.CASCADE, null=True)
+    UserModel, on_delete=models.CASCADE, null=True)
     user2 = models.CharField(max_length=300)
     where = models.CharField(max_length=255)
     total = models.IntegerField()
@@ -13,3 +13,4 @@ class Payment(models.Model):
 
     def __str__(self):
         return self.user
+
