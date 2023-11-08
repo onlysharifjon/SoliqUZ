@@ -13,6 +13,8 @@ class UserModel(models.Model):
     phone = models.IntegerField(unique=True)
     def __str__(self):
         return self.name
+
+
 class Cashbacks(models.Model):
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     cashback = models.IntegerField()

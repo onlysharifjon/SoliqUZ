@@ -75,6 +75,9 @@ class PaymentVIEW(APIView):
         return Response({'message': 'success'}, status=status.HTTP_200_OK)
 
 
+from UserSoliq.models import Cashbacks
+
+
 class Cashback(APIView):
     # queryset = .objects.all()
     def post(self, request):
@@ -83,12 +86,11 @@ class Cashback(APIView):
 
         if cash:
             cashback = cash.total / 100
-            serializer = CashbacksSerializer(data={'user': cash.usr, 'cashback': cashback})
-            if serializer.is_valid():
-                serializer.save()
-                return Response({'message': 'success'}, status=status.HTTP_200_OK)
+            pulcha = Cashbacks.objects.all().filter(user=cash.usr).first()
+            if pulcha:
+                pulcha.cashback += cashback
+                pulcha.save()
             else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+                return Response({'message': 'error'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'message': 'error'}, status=status.HTTP_400_BAD_REQUEST)
