@@ -16,7 +16,7 @@ class UserModel(models.Model):
 
 
 class Cashbacks(models.Model):
-    user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    user = models.CharField(max_length=300)
     cashback = models.IntegerField()
     def __str__(self):
         return self.user

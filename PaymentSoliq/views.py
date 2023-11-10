@@ -13,6 +13,7 @@ from UserSoliq.models import UserModel
 import datetime
 import qrcode
 from fpdf import FPDF
+import qrcode
 
 
 class PaymentVIEW(APIView):
@@ -71,35 +72,76 @@ class PaymentVIEW(APIView):
         pdf.cell(200, 10, txt="Where: " + str(where), ln=1, align="C")
         pdf.cell(200, 10, txt="Total: " + str(total), ln=1, align="C")
         pdf.cell(200, 10, txt="Time: " + str(time), ln=1, align="C")
+
+        # qr code yaratish uchun
+        img = qrcode.make(f"Check ID: {fiksal_seriya}")
+        img.save(f"uploads/check{fiksal_seriya}.png")
+        # save in pdf
+        pdf.image(f"uploads/check{fiksal_seriya}.png", x=50, y=50, w=100)
         pdf.output(f"uploads/check{fiksal_seriya}.pdf")
         return Response({'message': 'success'}, status=status.HTTP_200_OK)
 
 
 from UserSoliq.models import Cashbacks
 
+# class Cashback_API(APIView):
+#     @swagger_auto_schema(request_body=FiksalSeriyaSerializer)
+#     def post(self, request):
+#         fiksal_seriya = request.data.get('fiksal_seriya')
+#         print(fiksal_seriya)
+#         cash = Check.objects.all().filter(fiksal_seriya=fiksal_seriya).first()
+#         print(type(cash.usr))
+#         if cash:
+#             cashback1 = cash.total / 100
+#             print(cashback1)
+#             pulcha = Cashbacks.objects.all().filter(user=cash.usr).first()
+#             print(pulcha)
+#
+#             if pulcha is None:
+#                 a = 0
+#                 b = cashback1 + a
+#                 saver = Cashbacks.objects.create(
+#                     user=cash.usr, cashback=int(b)).save()
+#                 return Response({'message': 'success'}, status=status.HTTP_200_OK)
+#             else:
+#                 a = pulcha.cashback
+#                 b = cashback1 + a
+#                 saver = Cashbacks.objects.all().filter(user=cash.usr).update(cashback=int(b))
+#                 return Response({'message': 'success'}, status=status.HTTP_200_OK)
+#         else:
+#             return Response({'message': 'error2'}, status=status.HTTP_400_BAD_REQUEST)
 
-class Cashback_API(APIView):
+import qrcode
 
-    @swagger_auto_schema(request_body=FiksalSeriyaSerializer)
-    def post(self, request):
-        fiksal_seriya = request.data.get('fiksal_seriya')
+
+class Cashback_API_GET(APIView):
+    def get(self, request, fiksal_seriya):
         print(fiksal_seriya)
         cash = Check.objects.all().filter(fiksal_seriya=fiksal_seriya).first()
-        print(type(cash.usr))
-        if cash:
-            cashback = cash.total / 100
-            pulcha = Cashbacks.objects.all().filter(user=cash.usr).first()
-            if pulcha:
-                print(True)
+        if cash.status_check == 0:
+            cash.status_check = 1
+            cash.save()
+            print(type(cash.usr))
+            if cash:
+                cashback1 = cash.total / 100
+                print(cashback1)
+                pulcha = Cashbacks.objects.all().filter(user=cash.usr).first()
+                print(pulcha)
 
-                a = pulcha.cashback
-                b = cashback + a
-                print(type(b), b)
-                saver = Cashbacks.objects.all().filter(user=cash.usr).update(cashback=int(b))
-                return Response({'message': 'success'}, status=status.HTTP_200_OK)
+                if pulcha is None:
+                    a = 0
+                    b = cashback1 + a
+                    saver = Cashbacks.objects.create(user=cash.usr, cashback=int(b)).save()
+                    # create qr code
 
+                    return Response({'message': 'success'}, status=status.HTTP_200_OK)
 
+                else:
+                    a = pulcha.cashback
+                    b = cashback1 + a
+                    saver = Cashbacks.objects.all().filter(user=cash.usr).update(cashback=int(b))
+                    return Response({'message': 'success'}, status=status.HTTP_200_OK)
             else:
-                return Response({'message': 'error1'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'message': 'error2'}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({'message': 'error2'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Bu check oldin Ro`yxatdan O`tgan'}, status=status.HTTP_400_BAD_REQUEST)
