@@ -22,6 +22,7 @@ class Check(models.Model):
     fiksal_id = models.CharField(max_length=2, choices=CHOISES)
     fiksal_belgi = models.IntegerField()
     fiksal_seriya = models.IntegerField()
+    status_check = models.IntegerField(default=0)
 
     def __str__(self):
         return self.user
