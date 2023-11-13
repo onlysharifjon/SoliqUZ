@@ -77,40 +77,12 @@ class PaymentVIEW(APIView):
         img = qrcode.make(f"Check ID: {fiksal_seriya}")
         img.save(f"uploads/check{fiksal_seriya}.png")
         # save in pdf
-        pdf.image(f"uploads/check{fiksal_seriya}.png", x=50, y=50, w=100)
+        pdf.image(f"uploads/check{fiksal_seriya}.png", x=80-10, y=80, w=80)
         pdf.output(f"uploads/check{fiksal_seriya}.pdf")
         return Response({'message': 'success'}, status=status.HTTP_200_OK)
 
 
 from UserSoliq.models import Cashbacks
-
-# class Cashback_API(APIView):
-#     @swagger_auto_schema(request_body=FiksalSeriyaSerializer)
-#     def post(self, request):
-#         fiksal_seriya = request.data.get('fiksal_seriya')
-#         print(fiksal_seriya)
-#         cash = Check.objects.all().filter(fiksal_seriya=fiksal_seriya).first()
-#         print(type(cash.usr))
-#         if cash:
-#             cashback1 = cash.total / 100
-#             print(cashback1)
-#             pulcha = Cashbacks.objects.all().filter(user=cash.usr).first()
-#             print(pulcha)
-#
-#             if pulcha is None:
-#                 a = 0
-#                 b = cashback1 + a
-#                 saver = Cashbacks.objects.create(
-#                     user=cash.usr, cashback=int(b)).save()
-#                 return Response({'message': 'success'}, status=status.HTTP_200_OK)
-#             else:
-#                 a = pulcha.cashback
-#                 b = cashback1 + a
-#                 saver = Cashbacks.objects.all().filter(user=cash.usr).update(cashback=int(b))
-#                 return Response({'message': 'success'}, status=status.HTTP_200_OK)
-#         else:
-#             return Response({'message': 'error2'}, status=status.HTTP_400_BAD_REQUEST)
-
 import qrcode
 
 
