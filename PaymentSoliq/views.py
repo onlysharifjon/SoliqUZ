@@ -1,3 +1,4 @@
+from UserSoliq.models import Cashbacks
 from django.shortcuts import render
 
 # Create your views here.
@@ -82,66 +83,27 @@ class PaymentVIEW(APIView):
         return Response({'message': 'success'}, status=status.HTTP_200_OK)
 
 
-from UserSoliq.models import Cashbacks
-
-# class Cashback_API(APIView):
-#     @swagger_auto_schema(request_body=FiksalSeriyaSerializer)
-#     def post(self, request):
-#         fiksal_seriya = request.data.get('fiksal_seriya')
-#         print(fiksal_seriya)
-#         cash = Check.objects.all().filter(fiksal_seriya=fiksal_seriya).first()
-#         print(type(cash.usr))
-#         if cash:
-#             cashback1 = cash.total / 100
-#             print(cashback1)
-#             pulcha = Cashbacks.objects.all().filter(user=cash.usr).first()
-#             print(pulcha)
-#
-#             if pulcha is None:
-#                 a = 0
-#                 b = cashback1 + a
-#                 saver = Cashbacks.objects.create(
-#                     user=cash.usr, cashback=int(b)).save()
-#                 return Response({'message': 'success'}, status=status.HTTP_200_OK)
-#             else:
-#                 a = pulcha.cashback
-#                 b = cashback1 + a
-#                 saver = Cashbacks.objects.all().filter(user=cash.usr).update(cashback=int(b))
-#                 return Response({'message': 'success'}, status=status.HTTP_200_OK)
-#         else:
-#             return Response({'message': 'error2'}, status=status.HTTP_400_BAD_REQUEST)
-
-import qrcode
-
-
 class Cashback_API_GET(APIView):
     def get(self, request, fiksal_seriya):
-        print(fiksal_seriya)
-        cash = Check.objects.all().filter(fiksal_seriya=fiksal_seriya).first()
-        if cash.status_check == 0:
-            cash.status_check = 1
-            cash.save()
-            print(type(cash.usr))
-            if cash:
-                cashback1 = cash.total / 100
-                print(cashback1)
-                pulcha = Cashbacks.objects.all().filter(user=cash.usr).first()
-                print(pulcha)
-
-                if pulcha is None:
-                    a = 0
-                    b = cashback1 + a
-                    saver = Cashbacks.objects.create(user=cash.usr, cashback=int(b)).save()
-                    # create qr code
-
-                    return Response({'message': 'success'}, status=status.HTTP_200_OK)
-
-                else:
-                    a = pulcha.cashback
-                    b = cashback1 + a
-                    saver = Cashbacks.objects.all().filter(user=cash.usr).update(cashback=int(b))
-                    return Response({'message': 'success'}, status=status.HTTP_200_OK)
+        # mashini boolean field bilan filter qilish kere
+        cash = Check.objects.all().filter(
+            fiksal_seriya=fiksal_seriya, status_check=False).first()
+        if cash:
+            cashback1 = cash.total / 100
+            pulcha = Cashbacks.objects.all().filter(user=cash.usr).first()
+            if pulcha is None:
+                a = 0
+                b = cashback1 + a
+                saver = Cashbacks.objects.create(
+                    user=cash.usr, cashback=int(b)).save()
+                # create qr code
+                return Response({'message': 'success'}, status=status.HTTP_200_OK)
             else:
-                return Response({'message': 'error2'}, status=status.HTTP_400_BAD_REQUEST)
+                a = pulcha.cashback
+                b = cashback1 + a
+                saver = Cashbacks.objects.all().filter(user=cash.usr).update(cashback=int(b))
+                return Response({'message': 'success'}, status=status.HTTP_200_OK)
         else:
-            return Response({'message': 'Bu check oldin Ro`yxatdan O`tgan'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'error2'}, status=status.HTTP_400_BAD_REQUEST)
+
+# check
