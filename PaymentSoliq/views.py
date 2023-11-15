@@ -76,7 +76,7 @@ class PaymentVIEW(APIView):
         pdf.cell(200, 10, txt="Time: " + str(time), ln=1, align="C")
 
         # qr code yaratish uchun
-        img = qrcode.make(f"http://164.92.101.201:8000/{fiksal_seriya}")
+        img = qrcode.make(f"http://164.92.101.201:8000/pay/cashback/{fiksal_seriya}")
         img.save(f"uploads/check{fiksal_seriya}.png")
         # save in pdf
         pdf.image(f"uploads/check{fiksal_seriya}.png", x=80-10, y=80, w=80)
