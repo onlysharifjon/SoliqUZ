@@ -1,5 +1,7 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 
+from django.utils.text import slugify
 # Create your views here.
 import random
 from rest_framework.views import APIView
@@ -79,7 +81,16 @@ class PaymentVIEW(APIView):
         # save in pdf
         pdf.image(f"uploads/check{fiksal_seriya}.png", x=80-10, y=80, w=80)
         pdf.output(f"uploads/check{fiksal_seriya}.pdf")
-        return Response({'message': 'success'}, status=status.HTTP_200_OK)
+        pdf_path = f"uploads/check{fiksal_seriya}.pdf"
+        with open(pdf_path, 'rb') as pdf_file:
+            response = HttpResponse(pdf_file.read(), content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="uploads/check{fiksal_seriya}.pdf"'
+        return response
+
+
+
+
+
 
 
 from UserSoliq.models import Cashbacks
