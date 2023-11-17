@@ -11,4 +11,15 @@ class Payment(models.Model):
     time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.user
+        return self.pay_user
+
+
+class CardUser(models.Model):
+    card_holder = models.ForeignKey(UserModel, on_delete=models.CASCADE)
+    card_number = models.CharField(max_length=16, default="8600", unique=True)
+    exp_date = models.DateTimeField()
+    card_money = models.IntegerField()
+    def __str__(self):
+        return str(self.card_holder)
+
+
