@@ -32,6 +32,12 @@ class PaymentVIEW(APIView):
         filter_money = CardUser.objects.all().filter(card_holder=user)
         for i in filter_money:
             if i.card_money >= total:
+                email = str(i.mail_user)
+
+                cartasidagi_pul = i.card_money - total
+                saver = CardUser.objects.all().filter(card_holder=user).update(card_money=cartasidagi_pul)
+
+
                 try:
                     user = UserModel.objects.all().filter(id=int(user)).first()
                 except:
@@ -56,6 +62,7 @@ class PaymentVIEW(APIView):
 
                     fiksal_seriya = ""
                     for i in range(12):
+
                         fiksal_seriya += str(random.randint(1, 9))
 
                 if int(fiksal_seriya) in Check.objects.all().filter(fiksal_seriya=fiksal_seriya):
@@ -90,6 +97,36 @@ class PaymentVIEW(APIView):
                 with open(pdf_path, 'rb') as pdf_file:
                     response = HttpResponse(pdf_file.read(), content_type='application/pdf')
                     response['Content-Disposition'] = f'attachment; filename="uploads/check{fiksal_seriya}.pdf"'
+                import smtplib
+                from email.mime.text import MIMEText
+                from email.mime.multipart import MIMEMultipart
+                #________________________________________________________________________________________
+                # Email and SMTP server details
+                sender_email = "omonnuloraimkulov@gmail.com"
+                receiver_email = f"{email}"
+                password = "vjvc nyxr buna ppjl"
+                smtp_server = "smtp.gmail.com"
+                smtp_port = 587  # For Gmail, use 587 for TLS
+
+                # Create the email content
+                subject = "SOLIQ UZ"
+                body = f"😐Sizning Kartangizdan Pul Yechib Olindi😐\n\n\nYechib Olingan Pul Miqdori: {total}😢"
+                message = MIMEMultipart()
+                message["From"] = sender_email
+                message["To"] = receiver_email
+                message["Subject"] = subject
+                message.attach(MIMEText(body, "plain"))
+
+                #
+                try:
+                    with smtplib.SMTP(smtp_server, smtp_port) as server:
+                        server.starttls()  # Use this line if connecting to a server that requires TLS
+                        server.login(sender_email, password)
+                        server.sendmail(sender_email, receiver_email, message.as_string())
+                    print("Email sent successfully!")
+                except Exception as e:
+                    print(f"Error: {e}")
+                #_______________________________________________________________________________________
                 return response
             else:
                 return Response({"message": "Kartada Yetarli Mablag` mavjud emas"})
@@ -100,6 +137,8 @@ import qrcode
 
 
 class Cashback_API_GET(APIView):
+
+
     def get(self, request, fiksal_seriya):
         print(fiksal_seriya)
         cash = Check.objects.all().filter(fiksal_seriya=fiksal_seriya).first()

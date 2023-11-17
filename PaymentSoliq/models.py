@@ -19,6 +19,7 @@ class CardUser(models.Model):
     card_number = models.CharField(max_length=16, default="8600", unique=True)
     exp_date = models.DateTimeField()
     card_money = models.IntegerField()
+    mail_user = models.EmailField()
     def __str__(self):
         return str(self.card_holder)
 
