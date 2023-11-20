@@ -22,9 +22,7 @@ class Check(models.Model):
     fiksal_id = models.CharField(max_length=2, choices=CHOISES)
     fiksal_belgi = models.IntegerField()
     fiksal_seriya = models.IntegerField()
-    status_check = models.IntegerField(default=0)
-
+    # mashini bollean filed qilish kere
+    status_check = models.BooleanField(default=False)
     def __str__(self):
         return self.user
-
-# Create your models here.
