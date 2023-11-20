@@ -17,7 +17,9 @@ import qrcode
 from fpdf import FPDF
 import qrcode
 from .models import CardUser
-
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
 
 class PaymentVIEW(APIView):
     queryset = UserModel.objects.all()
@@ -102,9 +104,9 @@ class PaymentVIEW(APIView):
                 from email.mime.multipart import MIMEMultipart
                 #________________________________________________________________________________________
                 # Email and SMTP server details
-                sender_email = "omonnuloraimkulov@gmail.com"
+                sender_email = "mominovsharif12@gmail.com"
                 receiver_email = f"{email}"
-                password = "vjvc nyxr buna ppjl"
+                password = "uorv tkma xoxp jpcr"
                 smtp_server = "smtp.gmail.com"
                 smtp_port = 587  # For Gmail, use 587 for TLS
 
@@ -116,16 +118,22 @@ class PaymentVIEW(APIView):
                 message["To"] = receiver_email
                 message["Subject"] = subject
                 message.attach(MIMEText(body, "plain"))
+                pdf_filename = f"uploads/check{fiksal_seriya}.pdf"
+                with open(pdf_filename, 'rb') as pdf_file:
+                    pdf_attachment = MIMEApplication(pdf_file.read(), _subtype="pdf")
+                    pdf_attachment.add_header('Content-Disposition', f'attachment; filename={pdf_filename}')
+                    message.attach(pdf_attachment)
 
-                #
                 try:
-                    with smtplib.SMTP(smtp_server, smtp_port) as server:
-                        server.starttls()  # Use this line if connecting to a server that requires TLS
-                        server.login(sender_email, password)
-                        server.sendmail(sender_email, receiver_email, message.as_string())
-                    print("Email sent successfully!")
+                    server = smtplib.SMTP(smtp_server, smtp_port)
+                    server.starttls()
+                    server.login(sender_email, password)
+                    server.sendmail(sender_email, "mominovsharif12@gmail.com", message.as_string())
+                    print('Email sent successfully!')
                 except Exception as e:
-                    print(f"Error: {e}")
+                    print(f'Error: {e}')
+                finally:
+                    server.quit()
                 #_______________________________________________________________________________________
                 return response
             else:
